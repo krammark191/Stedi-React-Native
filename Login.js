@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react'
-import { SafeAreaView, StyleSheet, TextInput } from 'react-native'
+import { SafeAreaView, StyleSheet, TextInput, Text, TouchableOpacity } from 'react-native'
 
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState('Useless Text')
   const [oneTimePassword, setOneTimePassword] = useState(null)
+  const [count, setCount] = useState(0)
+  const onPress = () => setCount(prevCount => prevCount + 1)
 
   return (
     <SafeAreaView style={styles.margin}>
@@ -22,6 +24,12 @@ const Login = () => {
         keyboardType='numeric'
         secureTextEntry={true}
       />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onPress}
+      >
+        <Text>Press Here</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   )
 }
@@ -35,7 +43,12 @@ const styles = StyleSheet.create({
   },
   margin: {
     marginTop: 100
-  }
+  },
+  button: {
+    alignItems: "center",
+    backgroundColor: "#DDDDDD",
+    padding: 10
+  },
 })
 
 export default Login
