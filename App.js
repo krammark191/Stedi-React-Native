@@ -58,8 +58,12 @@ export default function App () {
       </NavigationContainer>
     )
   } else {
-    return <Login />
+    return( <Login setUserLoggedIn={setUserLoggedIn}/>)
   }
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  margin: {
+    marginTop: 100
+  },
+})
