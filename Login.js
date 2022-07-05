@@ -6,7 +6,7 @@ import {
   Text,
   TouchableOpacity
 } from 'react-native'
-import { clickProps } from 'react-native-web/dist/cjs/modules/forwardedProps'
+// import { clickProps } from 'react-native-web/dist/cjs/modules/forwardedProps'
 
 const sendText = async phoneNumber => {
   console.log('PhoneNumber: ', phoneNumber)
@@ -16,38 +16,41 @@ const sendText = async phoneNumber => {
   })
 }
 
-// const getUsername = async () => {
-//   await fetch('https://dev.stedi.me/twofactorlogin', {
-//     method: 'GET',
-//     body: JSON.stringify({ username }),
-//     headers: { 'Content-Type': 'application/json' }
-//   })
-// }
+const getUsername = async tokenResponseString => {
+  const token = await fetch(
+    'https://dev.stedi.me/validate/' + tokenResponseString,
+    { method: 'GET' }
+  )
+
+  const username = await token.text()
+  console.log('Username:', username)
+}
 
 const getToken = async ({ phoneNumber, oneTimePassword, setUserLoggedIn }) => {
-  await fetch('https://dev.stedi.me/twofactorlogin', {
+  const tokenResponse = await fetch('https://dev.stedi.me/twofactorlogin', {
     method: 'POST',
     body: JSON.stringify({ oneTimePassword, phoneNumber }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    headers: { 'Content-Type': 'application/json' }
   })
 
   const responseCode = tokenResponse.status
-  console.log('Response Status Code: ', responseCode)
+  console.log('Response Status Code:', responseCode)
   if (responseCode == 200) {
     setUserLoggedIn(true)
   }
 
   const tokenResponseString = await tokenResponse.text()
-  // console.log('Token Response: ', tokenResponseString)
+  console.log('Token Response:', tokenResponseString)
+  getUsername(tokenResponseString)
 }
 
 const Login = props => {
-  const [phoneNumber, setPhoneNumber] = useState('Useless Text')
+  const [phoneNumber, setPhoneNumber] = useState('4257607395')
   const [oneTimePassword, setOneTimePassword] = useState(null)
-  const [count, setCount] = useState(0)
-  const onPress = () => setCount(prevCount => prevCount + 1)
+  const [userLoggedIn, setUserLoggedIn] = useState(false)
+  const [username, getUsername] = useState('')
+  // const [count, setCount] = useState(0)
+  // const onPress = () => setCount(prevCount => prevCount + 1)
 
   return (
     <SafeAreaView style={styles.margin}>
@@ -78,13 +81,20 @@ const Login = props => {
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
-          //{
-          //  getToken({phoneNumber, oneTimePassword, setUserLoggedIn:props.setUserLoggedIn})}
-          //}
-          {
-            props.setUserLoggedIn(true)
+        onPress={
+          () => {
+            getUsername({
+              getUsername: props.getUsername
+            })
+            getToken({
+              phoneNumber,
+              oneTimePassword,
+              setUserLoggedIn: props.setUserLoggedIn
+            })
           }
+          // {
+          //   props.setUserLoggedIn(true)
+          // }
         }
       >
         <Text>Login</Text>
