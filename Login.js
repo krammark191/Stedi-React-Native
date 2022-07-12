@@ -16,7 +16,7 @@ const sendText = async phoneNumber => {
   })
 }
 
-const getUsername = async tokenResponseString => {
+const setUsername = async (tokenResponseString, getUsername) => {
   const token = await fetch(
     'https://dev.stedi.me/validate/' + tokenResponseString,
     { method: 'GET' }
@@ -24,9 +24,10 @@ const getUsername = async tokenResponseString => {
 
   const username = await token.text()
   console.log('Username:', username)
+  getUsername(username)
 }
 
-const getToken = async ({ phoneNumber, oneTimePassword, setUserLoggedIn }) => {
+const getToken = async ({ phoneNumber, oneTimePassword, setUserLoggedIn, getUsername }) => {
   const tokenResponse = await fetch('https://dev.stedi.me/twofactorlogin', {
     method: 'POST',
     body: JSON.stringify({ oneTimePassword, phoneNumber }),
@@ -41,7 +42,7 @@ const getToken = async ({ phoneNumber, oneTimePassword, setUserLoggedIn }) => {
 
   const tokenResponseString = await tokenResponse.text()
   console.log('Token Response:', tokenResponseString)
-  getUsername(tokenResponseString)
+  setUsername(tokenResponseString, getUsername)
 }
 
 const Login = props => {
@@ -83,13 +84,11 @@ const Login = props => {
         style={styles.button}
         onPress={
           () => {
-            getUsername({
-              getUsername: props.getUsername
-            })
             getToken({
               phoneNumber,
               oneTimePassword,
-              setUserLoggedIn: props.setUserLoggedIn
+              setUserLoggedIn: props.setUserLoggedIn,
+              getUsername: props.getUsername
             })
           }
           // {
